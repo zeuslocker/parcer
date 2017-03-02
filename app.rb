@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'open-uri'
 require 'json'
 require 'pry'
+categories_names=['iPhone', 'iPad', 'Watch', 'MacBook', 'Mac']
 categories = []
 categories << open('http://www.citrus.ua/shop/goods/mobile/675/')
 categories << open('http://www.citrus.ua/shop/goods/tabletpc/667/')
@@ -26,9 +27,22 @@ images = []
     str = image.attributes['style'].value
   images << 'http://www.citrus.ua'+str[str.index('/upload'), str.index(')')-str.index('/upload')]
   end
-p  product.at_css('h1').text
-
+  price = nil
+  if product.at_css('.price').text.to_f > product.at_css('.product_price').text.to_f
+    price = product.at_css('.price').text.to_f
+  else
+    price = product.at_css('.product_price').text.to_f
+  end
+  description = product.at_css('p[20]')&.text || 'ttttttrrruuueeee'
+  show_case = product.at_css('.tabs_content').to_html
   productsArr.push(
-  images: images,
+  title: product.at_css('h1').text,
+  description: description,
+  price: price,
+  category_type: categories_names[index],
+  subcategory: '',
+  images_links: images,
+  show_case: show_case
   )
+  p roductsArr
 end
